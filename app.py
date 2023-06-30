@@ -34,10 +34,9 @@ def predict():
     result = model.predict(features)[0]
     prob = model.predict_proba(features)[:,1][0]
     if result:
-        st.error(f'預測為可能有慢性腎臟病，患病機率:{prob:.2}')
+        st.error(f'預測為可能有慢性腎臟病，患病機率:{prob:.2}，表示您對於上述危險因子具有高度曝險不一定有患病，建議您到醫院做進一步檢查')
         hospital(region)
         health_info()
-        
     else:
         st.success(f'預測為健康狀態，健康機率:{1-prob:.2}')
         health_info()
@@ -205,7 +204,7 @@ region = st.selectbox('您目前居住在哪裡',
                        '彰化縣','雲林縣','嘉義縣','嘉義市','台南市','高雄市','屏東縣','南投縣'
                        '宜蘭縣','花蓮縣','台東縣','金門縣','澎湖縣','連江縣'])
 age = st.number_input('您目前的年齡',
-                      min_value=1,max_value=100,value=20)
+                      min_value=1,max_value=100,value=80)
 
 st.markdown('##### 三高病史 (須為經醫師診斷)')
 high_blood_pressure = setup_quesion('您是否有高血壓')
@@ -227,7 +226,7 @@ head_pain = setup_quesion('您是否有頭痛或偏頭痛')
 
 st.markdown('##### 其他')
 longterm_drug = setup_quesion('您是否有使用慢性處方籤')
-smoke = setup_quesion('您是否有吸菸')
+smoke = setup_quesion('您是否有或有過長期吸菸的經驗')
 
 
 pred = st.button('Predict')
