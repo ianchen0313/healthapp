@@ -3,7 +3,7 @@ import pickle
 import pandas as pd
 import sklearn
 from model import final_model
-model = final_model()
+model = final_model
 # initialize section
 #with open('trained_model', 'rb') as f:
     #model = pickle.load(f)
