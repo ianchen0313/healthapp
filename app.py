@@ -34,11 +34,11 @@ def predict():
     result = model.predict(features)[0]
     prob = model.predict_proba(features)[:,1][0]
     if result:
-        st.error(f'預測為可能有慢性腎臟病，患病機率:{prob:.2}，表示您對於上述危險因子具有高度曝險不一定有患病，建議您到醫院做進一步檢查')
+        st.error(f'預測為可能有慢性腎臟病，患病機率:{prob:.0%}，表示您對於上述危險因子具有高度曝險不一定有患病，建議您到醫院做進一步檢查')
         hospital(region)
         health_info()
     else:
-        st.success(f'預測為健康狀態，健康機率:{1-prob:.2}')
+        st.success(f'預測為健康狀態，健康機率:{1-prob:.0%}')
         health_info()
             
 def health_info():
@@ -117,7 +117,7 @@ def hospital(region):
         '連江縣':[('連江縣立醫院', 'https://ljc.matsuh.gov.tw/OINetReg/OINetReg.Reg/Reg_NetReg.aspx')]}
 
     data = lookup_table[region]
-    st.info('您附近提供腎臟檢查之醫院')
+    st.info('在您地區提供腎臟檢查之醫院')
     for i, (name, ref) in enumerate(data,1):
         st.markdown(f"{i}. [{name}]({ref})")
 
@@ -232,6 +232,7 @@ smoke = setup_quesion('您是否有或有過長期吸菸的經驗')
 pred = st.button('Predict')
 if pred:
     my_bar = st.progress(0)
+    time.sleep(0.1)
     for i in range(0,100, 10):
         if i < 5:
             time.sleep(0.1)
