@@ -26,7 +26,6 @@ def log_model():
 
     # Make predictions with the trained pipeline
     y_pred = pipeline.predict(X_test)
-    metic_evaluation(y_test, y_pred)
     
     return pipeline
 
@@ -43,7 +42,6 @@ def rf_model():
 
     # Make predictions with the trained pipeline
     y_pred = pipeline.predict(X_test_sub)
-    metic_evaluation(y_test, y_pred)
     
     return pipeline
 
