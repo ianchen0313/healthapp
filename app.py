@@ -8,7 +8,7 @@ from PIL import Image
 
 img_lis = []
 for i in range(1,9):
-    img = Image.open(f"投影片{i}.jpg")
+    img = Image.open(f"認識腎臟病/投影片{i}.jpg")
     img_lis.append(img)
 
 model = final_model
@@ -51,12 +51,13 @@ def predict():
        '是否曾嚼食檳榔', '平均每週幾天吃水果', '年齡', 'bmi', '失業中']
     features = features.reindex(columns=column_order)
     result = model.predict(features)[0]
+    prob = model.predict_proba(features)[0][1]
     if result:
-        st.error(f'預測為可能有慢性腎臟病，表示您對於上述危險因子具有高度曝險不一定有患病，建議您到醫院做進一步檢查')
+        st.error(f'預測為可能有慢性腎臟病，患病機率為: {prob:.0%}，表示您對於上述危險因子具有高度曝險不一定有患病，建議您到醫院做進一步檢查')
         hospital(region)
         health_info()
     else:
-        st.success(f'預測為健康狀態')
+        st.success(f'預測為健康狀態，健康機率為: {1-prob:.0%}')
         health_info()
      
 def health_info():
@@ -156,7 +157,8 @@ with st.expander("查看更多關於模型表現"):
             Specificity(實際沒病者中預測為沒病比率): [0.7249, 0.7309]
             """)
 
-with st.expander("查看更多認識慢性腎臟病"):
+
+with (st.expander("查看更多認識慢性腎臟病")):
     for img in img_lis:
         st.image(img)
 
@@ -170,7 +172,7 @@ region = st.selectbox('您目前居住在哪裡',
                        '彰化縣','雲林縣','嘉義縣','嘉義市','台南市','高雄市','屏東縣','南投縣'
                        '宜蘭縣','花蓮縣','台東縣','金門縣','澎湖縣','連江縣'])
 age = st.number_input('您目前的年齡',
-                      min_value=1,max_value=100,value=80)
+                      min_value=1,max_value=100,value=25)
 height = st.number_input('您目前身高(cm)',min_value=1,max_value=200,value=165)
 weight = st.number_input('您目前體重(kg)',min_value=1,max_value=200,value=60)
 bmi = weight / ((height/100)**2)
