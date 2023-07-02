@@ -4,9 +4,15 @@ import pandas as pd
 import sklearn
 import time
 from model import final_model
+from PIL import Image
+
+img_lis = []
+for i in range(1,9):
+    img = Image.open(f"認識腎臟病/投影片{i}.jpg")
+    img_lis.append(img)
+
 model = final_model
 
-    
 def setup_quesion(title='title'):
     value = st.radio(title,['無','有'], horizontal=True, key=title)
     if value == '無':
@@ -17,6 +23,14 @@ def setup_quesion(title='title'):
 
 def predict():
     features = pd.DataFrame({
+    '平均每週幾天吃水果':[fruit_freq],
+    '是否有胃潰瘍或十二指腸潰瘍':[stomach_problem],
+    '是否有心臟病':[heart_problem],
+    '和去年比較之健康狀況':[compare],
+    '是否有同居伴侶':[couple],
+    'bmi':[bmi],
+    '失業中':[0],
+    '是否曾嚼食檳榔':[chew],
     '是否有高血壓':[high_blood_pressure],
     '是否有高血脂':[high_blood_oil], 
     '是否有糖尿病':[high_blood_sugar], 
@@ -31,16 +45,20 @@ def predict():
     '是否使用慢性處方籤':[longterm_drug],
     '是否曾吸菸':[smoke], 
     '年齡':[age]})
+    column_order = ['是否有同居伴侶', '和去年比較之健康狀況', '是否有高血壓', '是否有高血脂', '是否有心臟病', '是否有糖尿病',
+       '是否有骨質疏鬆症', '是否有胃潰瘍或十二指腸潰瘍', '是否有肝臟疾病', '是否有子宮卵巢疾病', '是否關節疼痛',
+       '是否下背部疼痛或腰痛', '是否坐骨神經痛', '是否頭痛或偏頭痛', '是否痛風', '是否使用慢性處方籤', '是否曾吸菸',
+       '是否曾嚼食檳榔', '平均每週幾天吃水果', '年齡', 'bmi', '失業中']
+    features = features.reindex(columns=column_order)
     result = model.predict(features)[0]
-    prob = model.predict_proba(features)[:,1][0]
     if result:
-        st.error(f'預測為可能有慢性腎臟病，患病機率:{prob:.0%}，表示您對於上述危險因子具有高度曝險，但不一定有患病，建議您到醫院做進一步檢查')
+        st.error(f'預測為可能有慢性腎臟病，表示您對於上述危險因子具有高度曝險不一定有患病，建議您到醫院做進一步檢查')
         hospital(region)
         health_info()
     else:
-        st.success(f'預測為健康狀態，健康機率:{1-prob:.0%}')
+        st.success(f'預測為健康狀態')
         health_info()
-            
+     
 def health_info():
     st.warning('衛教資訊(有效預防與延緩慢性腎臟病)')
     st.text(
@@ -130,76 +148,22 @@ st.caption('本預測模型是由「腎敗難免」團隊利用衛生福利部�
 
 with st.expander("查看更多關於模型表現"):
     st.text("""
-            原始資料經整理後共有 11283 個有效樣本，其中患有腎臟病者為 494 人，佔有效樣本數 4%
+            原始資料經整理後共有 24392 個有效樣本，其中患有腎臟病者為 1000 人，佔有效樣本數 4%
             團隊將資料進行 8:2 切割分成訓練集與驗證集，以下數據為模型訓練完成後在驗證集的表現
             (採 bootstrap 法建構之 95% 信賴區間)
-            Accuracy(整體預測正確率): [0.7356, 0.7398]
-            Sensitivity(實際有病者中預測為有病比率): [0.5756, 0.6267]
-            Specificity(實際沒病者中預測為沒病比率): [0.7420, 0.7461]
+            Accuracy(整體預測正確率): [0.7210, 0.7274]
+            Sensitivity(實際有病者中預測為有病比率): [0.6303, 0.6488]
+            Specificity(實際沒病者中預測為沒病比率): [0.7249, 0.7309]
             """)
 
 with st.expander("查看更多認識慢性腎臟病"):
-    st.text("""
-疾病簡介
+    for img in img_lis:
+        st.image(img)
 
-腎臟組織因疾病遭受無法恢復的損壞時，腎功能就會逐漸衰退，當腎臟組織長期受損達三個月以上
-無法恢復原有的功能，稱為慢性腎臟病
-
-腎臟功能：
-
-1. 形成尿液，排除水分
-2. 調節血壓
-3. 排泄體內代謝後的廢物
-4. 維持人體內水分與電解質及酸鹼度的平衡
-5. 製造紅血球生成素，刺激紅血球的生長和成熟，維持血色素的濃度
-6. 產生活性維生素D，調節鈣與磷的代謝
-7. 腎臟與內分泌有關，假如腎臟損傷也會出現內分泌失調
-8. 慢性腎臟病早期常常沒有明顯的症狀，等到發現時已經有相當程度的受損
-
-以下為慢性腎臟病的十大高危險群：
-
-1. 糖尿病患者：長期高血糖會造成腎臟病變及血管病變
-2. 高血壓患者：血壓控制不好會影響腎臟血管及腎絲球硬化
-3. 心血管疾病患者：心臟衰竭容易導致腎功能惡化
-4. 蛋白尿患者：蛋白尿的出現已屬於慢性腎臟病且是心血管疾病的危險因子
-5. 痛風患者：血液尿酸濃度過高時，尿酸會沉積在腎組織影響腎功能
-6. 65歲以上老年人：老年人身體器官隨年齡增加而退化，容易合併腎功能退化
-7. 長期服用藥物患者
-8. 有腎臟病家族史：家族中有多囊性腎病變、遺傳性腎炎及透析患者
-9. 抽菸者：抽菸會刺激交感神經，升高血壓造成腎臟負擔而影響腎功能
-10.代謝症候群的病人：男生腰圍＞35吋(90公分)，女生腰圍＞31吋(80公分)
-
-慢性腎臟疾病分期：
-
-第一期：腎功能正常併有尿液或影像學檢查的異常；腎絲球過濾率(GFR)≧90mL/min/1.73㎡
-第二期：輕度腎功能損傷併有尿液或影像學檢查的異常；腎絲球過濾率(GFR)60-89mL/min/1.73㎡
-第三期：中度腎功能損傷；腎絲球過濾率(GFR)30-59 mL/min/1.73㎡
-第四期：重度腎功能損傷；腎絲球過濾率(GFR)15-29 mL/min/1.73㎡
-第五期：末期腎衰竭；腎絲球過濾率(GFR)＜15mL/min/1.73㎡
-
-慢性腎臟病早期的症狀是：泡、水、高、貧、倦
-1. 泡：小便有泡「泡」
-2. 水：「水」腫
-3. 高：「高」血壓
-4. 貧：「貧」血
-5. 倦：「倦」怠
-
-慢性腎臟病常見症狀：
-
-1. 水腫：腎臟病人最常見的臨床症狀就是水腫，常出現於眼瞼、踝部、後背。水腫時均伴有尿少及體重增加
-2. 高血壓：腎臟病人就醫時應注意檢查血壓，血壓升高常是病情加重的表現
-3. 尿頻、尿急、尿痛。尿頻（次數多，每次尿一點）、急（憋不住尿）、痛（排尿時小腹疼痛、有下墜感），總稱為”尿路刺激症”是膀胱疾病的表現，常見於膀胱炎
-4. 腰痛：間斷發作的劇烈腰痛，常沿側腹部向會陰部放射，伴嘔吐。常見於腎盂、輸尿管結石
-5. 少尿或無尿：尿量每天少於400毫升叫做少尿，少於100毫升的叫無尿，此時腎臟已不能從尿液中排出代謝物，無法調節水和其他內在環境的穩定和平衡
-6. 多尿：每天尿量大於2500毫升的稱為多尿。同時應注意夜尿（入睡至起床間的尿量）與晝尿的比例（正常為1:2或1:3）
-7. 血尿：血尿可能是嚴重疾病的信號，應及時就診查明原因，做出適當的處理
-8. 尿中泡沫增多：可能是尿中出現大量蛋白的表現，應及時作尿液檢查
-9. 其他：原因不明的食慾不振、乏力、貧血等，也可能是腎臟疾症引起的
-            """)
 st.write("---")
 
-st.markdown('#### 以下共有十五題，請依實際狀況回答')
-st.markdown('##### 居住地與年齡')
+st.markdown('#### 以下共有 22 題，請依實際狀況回答')
+st.markdown('##### 基本資料 (身高體重是為了算 bmi)')
 
 region = st.selectbox('您目前居住在哪裡',
                       ['基隆市','台北市','新北市','桃園市','新竹縣','新竹市','苗栗縣','台中市',
@@ -207,6 +171,33 @@ region = st.selectbox('您目前居住在哪裡',
                        '宜蘭縣','花蓮縣','台東縣','金門縣','澎湖縣','連江縣'])
 age = st.number_input('您目前的年齡',
                       min_value=1,max_value=100,value=80)
+height = st.number_input('您目前身高(cm)',min_value=1,max_value=200,value=165)
+weight = st.number_input('您目前體重(kg)',min_value=1,max_value=200,value=60)
+bmi = weight / ((height/100)**2)
+compare = st.selectbox('和去年比較之健康狀況',
+                       ['比去年差很多', '比去年差一些', '和去年持平','比去年好一些','比去年好很多'],index=2)
+if compare == '比去年差很多':
+    compare = -2
+elif compare =='比去年差一些':
+    compare = -1
+elif compare =='和去年持平':
+    compare = 0
+elif compare =='比去年好一些':
+    compare = 1
+elif compare =='比去年好很多':
+    compare = 2
+fruit_freq = st.selectbox('每週吃幾天水果',
+                       ['不吃', '每週 1 天或以下', '每週 2-3 天','每週 4-5 天','幾乎每天'],index=2)
+if fruit_freq == '不吃':
+    fruit_freq = 0
+elif fruit_freq =='每週一天或以下':
+    fruit_freq = 1
+elif fruit_freq =='每週 2-3 天':
+    fruit_freq = 2
+elif fruit_freq =='每週 4-5 天':
+    fruit_freq = 3
+elif fruit_freq =='幾乎每天':
+    fruit_freq = 4
 
 st.markdown('##### 三高病史 (須為經醫師診斷)')
 high_blood_pressure = setup_quesion('您是否有高血壓')
@@ -214,21 +205,25 @@ high_blood_sugar = setup_quesion('您是否有糖尿病')
 high_blood_oil = setup_quesion('您是否有高血脂')
 
 st.markdown('##### 其他疾病 (須為經醫師診斷)')
+heart_problem = setup_quesion('是否有心臟病')
 bone_lack = setup_quesion('您是否有骨質疏鬆')
 liver_problem = setup_quesion('您是否有肝臟疾病')
 gout = setup_quesion('您是否有痛風')
+stomach_problem = setup_quesion('是否有胃潰瘍或十二指腸潰瘍')
 womon_proble = setup_quesion('您是否有子宮卵巢疾病(男性填無)')
 
 
-st.markdown('##### 身體不適 (自我評估)')
+st.markdown('##### 身體不適症狀 (自我評估)')
 joint_pain = setup_quesion('您是否關節疼痛')
 back_pain = setup_quesion('您是否有下背部疼痛或是腰痛')
 sit_pain = setup_quesion('您是否有坐骨神經痛')
 head_pain = setup_quesion('您是否有頭痛或偏頭痛')
 
 st.markdown('##### 其他')
+couple = setup_quesion('是否有同居伴侶 (不論已婚未婚)')
 longterm_drug = setup_quesion('您是否有使用慢性處方籤')
-smoke = setup_quesion('您是否有或有過長期吸菸的經驗')
+smoke = setup_quesion('您是否有或有過長期吸菸的經驗(一年以上)')
+chew = setup_quesion('您是否有或有過長期吃檳榔的經驗(一年以上)')
 
 
 pred = st.button('Predict')
