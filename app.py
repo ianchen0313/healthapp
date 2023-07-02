@@ -173,8 +173,8 @@ region = st.selectbox('您目前居住在哪裡',
                        '宜蘭縣','花蓮縣','台東縣','金門縣','澎湖縣','連江縣'])
 age = st.number_input('您目前的年齡',
                       min_value=1,max_value=100,value=25)
-height = st.number_input('您目前身高(cm)',min_value=1,max_value=200,value=165)
-weight = st.number_input('您目前體重(kg)',min_value=1,max_value=200,value=60)
+height = st.number_input('您目前身高(cm)',min_value=100, max_value=200, value=165)
+weight = st.number_input('您目前體重(kg)',min_value=1, max_value=200, value=60)
 bmi = weight / ((height/100)**2)
 compare = st.selectbox('和去年比較之健康狀況',
                        ['比去年差很多', '比去年差一些', '和去年持平','比去年好一些','比去年好很多'],index=2)
