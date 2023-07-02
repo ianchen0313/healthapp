@@ -8,7 +8,7 @@ from PIL import Image
 
 img_lis = []
 for i in range(1,9):
-    img = Image.open(f"認識腎臟病/投影片{i}.jpg")
+    img = Image.open(f"投影片{i}.jpg")
     img_lis.append(img)
 
 model = final_model
