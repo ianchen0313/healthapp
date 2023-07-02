@@ -34,7 +34,7 @@ def predict():
     result = model.predict(features)[0]
     prob = model.predict_proba(features)[:,1][0]
     if result:
-        st.error(f'預測為可能有慢性腎臟病，患病機率:{prob:.0%}，表示您對於上述危險因子具有高度曝險不一定有患病，建議您到醫院做進一步檢查')
+        st.error(f'預測為可能有慢性腎臟病，患病機率:{prob:.0%}，表示您對於上述危險因子具有高度曝險，但不一定有患病，建議您到醫院做進一步檢查')
         hospital(region)
         health_info()
     else:
