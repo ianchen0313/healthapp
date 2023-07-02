@@ -75,8 +75,8 @@ def svc_model():
 
 from sklearn.ensemble import VotingClassifier
 def final_model():
-    models = [('logreg', log_model()), ('rf', rf_model()), ('svc', svc_model())]
-    voting_clf = VotingClassifier(estimators=models, voting='hard')
+    models = [('logreg', log_model())]#, ('rf', rf_model()), ('svc', svc_model())]
+    voting_clf = VotingClassifier(estimators=models, voting='soft')
     voting_clf.fit(X_train, y_train)
     y_pred = voting_clf.predict(X_test)
     
