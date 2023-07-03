@@ -144,7 +144,7 @@ with (st.expander("查看更多認識慢性腎臟病")):
 
 st.write("---")
 
-st.markdown('#### 以下共有 22 題，請依實際狀況回答')
+st.markdown('#### 以下共有 23 題，請依實際狀況回答')
 st.markdown('##### 基本資料 (身高體重是為了算 bmi)')
 
 region = st.selectbox('您目前居住在哪裡',
